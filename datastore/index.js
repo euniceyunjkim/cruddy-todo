@@ -22,10 +22,21 @@ exports.create = (text, callback) => {
 };
 
 exports.readAll = (callback) => {
+
   var data = _.map(items, (text, id) => {
-    return { id, text };
+    return { id, id };
   });
+
   callback(null, data);
+
+  fs.readFile(exports.dataDir, (err, fileData) => {
+    if (err) {
+      throw ('no files in directory');
+    } else {
+      callback(null, data);
+    }
+  });
+
 };
 
 exports.readOne = (id, callback) => {
