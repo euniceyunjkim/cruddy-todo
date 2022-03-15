@@ -23,20 +23,22 @@ exports.create = (text, callback) => {
 
 exports.readAll = (callback) => {
 
-  var data = _.map(items, (text, id) => {
-    return { id, id };
-  });
+  var data = [];
 
-  callback(null, data);
-
-  fs.readFile(exports.dataDir, (err, fileData) => {
+  fs.readdir(exports.dataDir, (err, fileData) => {
     if (err) {
       throw ('no files in directory');
     } else {
+      _.each(fileData, (title) => {
+        var id = title.split('.');
+        var result = {};
+        result.id = id[0];
+        result.text = id[0];
+        data.push(result);
+      });
       callback(null, data);
     }
   });
-
 };
 
 exports.readOne = (id, callback) => {
