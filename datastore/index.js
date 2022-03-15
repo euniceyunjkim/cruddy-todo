@@ -35,14 +35,6 @@ exports.readAll = (callback) => {
         result.id = id[0];
         result.text = id[0];
         data.push(result);
-        // var result = {};
-        // var fullPath = path.join(exports.dataDir, title);
-        // var id = title.split('.');
-        // fs.readFile(fullPath, (err, data) => {
-        //   result.id = id[0];
-        //   result.text = data;
-        //   data.push(result);
-        // });
       });
       callback(null, data);
     }
@@ -85,7 +77,6 @@ exports.update = (id, text, callback) => {
       });
     }
   });
-
 };
 
 exports.delete = (id, callback) => {
@@ -98,19 +89,15 @@ exports.delete = (id, callback) => {
     if (err) {
       callback(new Error(`No item with id: ${id}`));
     } else {
-      delete result.id;
-      callback();
+      fs.unlink(fullPath, (err) => {
+        if (err) {
+          throw ('cannot delete file');
+        } else {
+          callback();
+        }
+      });
     }
   });
-
-  // var item = items[id];
-  // delete items[id];
-  // if (!item) {
-  //   // report an error if item not found
-  //   callback(new Error(`No item with id: ${id}`));
-  // } else {
-  //   callback();
-  // }
 };
 
 // Config+Initialization code -- DO NOT MODIFY /////////////////////////////////
