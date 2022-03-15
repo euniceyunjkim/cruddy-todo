@@ -3,6 +3,9 @@ const path = require('path');
 const _ = require('underscore');
 const counter = require('./counter');
 
+const Promise = require('bluebird');
+const promiseRead = Promise.promisify(fs.readFile);
+
 var items = {};
 
 // Public API - Fix these CRUD functions ///////////////////////////////////////
@@ -23,24 +26,25 @@ exports.create = (text, callback) => {
 
 exports.readAll = (callback) => {
 
-  var data = [];
-
-  fs.readdir(exports.dataDir, (err, fileData) => {
+  fs.readdir(exports.dataDir, (err, files) => {
     if (err) {
       throw ('no files in directory');
     } else {
-      _.each(fileData, (title) => {
-        var id = title.split('.');
-        var result = {};
-        result.id = id[0];
-        result.text = id[0];
-        data.push(result);
+      var data = _.map(files, (file) => {
+        var id = path.basename(file, '.txt');
+        var filepath = path.join(exports.dataDir, file);
+        return promiseRead(filepath).then(fileData => {
+          return {
+            id: id,
+            text: fileData.toString()
+          };
+        });
       });
-      callback(null, data);
+      Promise.all(data)
+        .then(items => callback(null, items), err => callback(err));
     }
   });
 };
-
 exports.readOne = (id, callback) => {
 
   var result = {};
